@@ -54,6 +54,19 @@ public class HospitalSystemTest {
         assertEquals(0, HospitalSystem.patientCount);
     }
 
+        @Test
+        public void testDeleteInpatientReleasesBed() {
+                HospitalSystem.registerPatient("P001", "John", "Smith", 45,
+                                "Male", "Flu", PatientCategory.INPATIENT);
+                HospitalSystem.allocateBed("P001");
+
+                String result = HospitalSystem.deletePatient("P001");
+
+                assertEquals("Patient deleted successfully.", result);
+                assertFalse(HospitalSystem.ward[0][0].isOccupied());
+                assertEquals(0, HospitalSystem.countOccupiedBeds());
+        }
+
     @Test
     public void testAllocateBed() {
         HospitalSystem.registerPatient("P001", "John", "Smith", 45,
@@ -88,6 +101,36 @@ public class HospitalSystemTest {
         assertEquals("A patient with this ID already exists. Please use a different ID.", result);
         assertEquals(1, HospitalSystem.patientCount);
     }
+
+        @Test
+        public void testPreventBlankPatientId() {
+                String result = HospitalSystem.registerPatient("", "John", "Smith", 45,
+                                "Male", "Flu", PatientCategory.OUTPATIENT);
+
+                assertEquals("Patient ID cannot be blank.", result);
+                assertEquals(0, HospitalSystem.patientCount);
+        }
+
+        @Test
+        public void testPreventNegativeAge() {
+                String result = HospitalSystem.registerPatient("P001", "John", "Smith", -1,
+                                "Male", "Flu", PatientCategory.OUTPATIENT);
+
+                assertEquals("Age cannot be negative.", result);
+                assertEquals(0, HospitalSystem.patientCount);
+        }
+
+        @Test
+        public void testInvalidAgeUpdateDoesNotChangePatient() {
+                HospitalSystem.registerPatient("P001", "John", "Smith", 45,
+                                "Male", "Flu", PatientCategory.OUTPATIENT);
+
+                String result = HospitalSystem.updatePatient("P001", "Jane", "", "old", "", "");
+
+                assertEquals("Age must be a whole number. Patient details were not changed.", result);
+                assertEquals("John", HospitalSystem.patients[0].getFirstName());
+                assertEquals(45, HospitalSystem.patients[0].getAge());
+        }
 
     @Test
     public void testPreventAllocatingOccupiedBedToSamePatient() {

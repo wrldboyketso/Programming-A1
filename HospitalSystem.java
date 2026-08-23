@@ -164,6 +164,14 @@ public class HospitalSystem {
             return "Cannot register more patients. The system is full.";
         }
 
+        if (id == null || id.trim().isEmpty()) {
+            return "Patient ID cannot be blank.";
+        }
+
+        if (age < 0) {
+            return "Age cannot be negative.";
+        }
+
         if (findPatientIndex(id) != -1) {
             return "A patient with this ID already exists. Please use a different ID.";
         }
@@ -248,6 +256,19 @@ public class HospitalSystem {
 
         Patient p = patients[index];
 
+        int newAge = p.getAge();
+        if (!ageInput.isEmpty()) {
+            try {
+                newAge = Integer.parseInt(ageInput);
+            } catch (NumberFormatException mistake) {
+                return "Age must be a whole number. Patient details were not changed.";
+            }
+
+            if (newAge < 0) {
+                return "Age cannot be negative. Patient details were not changed.";
+            }
+        }
+
         if (!firstName.isEmpty()) {
             p.setFirstName(firstName);
         }
@@ -255,11 +276,7 @@ public class HospitalSystem {
             p.setLastName(lastName);
         }
         if (!ageInput.isEmpty()) {
-            try {
-                p.setAge(Integer.parseInt(ageInput));
-            } catch (NumberFormatException mistake) {
-                System.out.println("Age was not a whole number, so it was not changed.");
-            }
+            p.setAge(newAge);
         }
         if (!gender.isEmpty()) {
             p.setGender(gender);
@@ -288,6 +305,12 @@ public class HospitalSystem {
 
         if (index == -1) {
             return "Patient not found.";
+        }
+
+        Bed bed = findBedByPatientId(id);
+        if (bed != null) {
+            bed.setOccupied(false);
+            bed.setPatientId(null);
         }
 
         // shift everyone after this one back by one spot
