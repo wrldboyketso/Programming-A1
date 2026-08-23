@@ -1,0 +1,6 @@
+javac Bed.java Patient.java PatientCategory.java Inpatient.java HospitalSystem.java
+java HospitalSystem
+
+To compile and run the tests:
+javac -cp ".;junit.jar" HospitalSystemTest.java
+java -jar junit.jar execute --class-path . --scan-classpath --details=tree --fail-if-no-tests
